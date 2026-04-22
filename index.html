@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vesper BI Hub</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; color: #1a1a1a; min-height: 100vh; }
+  .header { background: #fff; border-bottom: 1px solid #e8e8e5; padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .header p { font-size: 13px; color: #888; margin-top: 2px; }
+  .header-logo { font-size: 13px; color: #aaa; font-weight: 500; }
+  .main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .kpi { background: #fff; border: 1px solid #e8e8e5; border-radius: 10px; padding: 16px; }
+  .kpi-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; color: #1a1a1a; }
+  .kpi-trend { font-size: 12px; margin-top: 4px; }
+  .trend-up { color: #2d7d46; }
+  .trend-down { color: #c0392b; }
+  .trend-flat { color: #999; }
+  .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+  .search-wrap { flex: 1; min-width: 200px; position: relative; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; }
+  input[type=text] { width: 100%; padding: 10px 12px 10px 36px; font-size: 14px; border: 1px solid #e8e8e5; border-radius: 8px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
+  input[type=text]:focus { border-color: #bbb; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid #e8e8e5; cursor: pointer; background: #fff; color: #666; transition: all 0.15s; white-space: nowrap; }
+  .chip:hover { border-color: #ccc; color: #333; }
+  .chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .cards { display: flex; flex-direction: column; gap: 8px; }
+  .card { background: #fff; border: 1px solid #e8e8e5; border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; text-decoration: none; color: inherit; }
+  .card:hover { border-color: #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .card-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .icon-adoption { background: #eef4ff; }
+  .icon-engagement { background: #e8f8f0; }
+  .icon-retention { background: #fef9ec; }
+  .icon-pricing { background: #f0eeff; }
+  .icon-sales { background: #fff0ee; }
+  .card-body { flex: 1; min-width: 0; }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .card-desc { font-size: 12px; color: #888; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-meta { font-size: 11px; color: #bbb; margin-top: 4px; }
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .tag { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 5px; }
+  .tag-adoption { background: #eef4ff; color: #3366cc; }
+  .tag-engagement { background: #e8f8f0; color: #1a7a46; }
+  .tag-retention { background: #fef9ec; color: #a06010; }
+  .tag-pricing { background: #f0eeff; color: #5533aa; }
+  .tag-sales { background: #fff0ee; color: #aa3322; }
+  .card-arrow { color: #ddd; font-size: 16px; }
+  .empty { text-align: center; padding: 48px; color: #bbb; font-size: 14px; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #bbb; margin-bottom: 12px; }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 16px 20px; }
+    .main { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>BI hub</h1>
+    <p>Your analytics home base</p>
+  </div>
+  <div class="header-logo">Vesper · Internal</div>
+</div>
+
+<div class="main">
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Active accounts</div>
+      <div class="kpi-value">142</div>
+      <div class="kpi-trend trend-up">↑ +8 MoM</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Stickiness (DAU/MAU)</div>
+      <div class="kpi-value">34%</div>
+      <div class="kpi-trend trend-up">↑ +2pp MoM</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Retention rate</div>
+      <div class="kpi-value">81%</div>
+      <div class="kpi-trend trend-flat">— stable</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">New users (30d)</div>
+      <div class="kpi-value">319</div>
+      <div class="kpi-trend trend-down">↓ −12 MoM</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Search dashboards…" oninput="filter()">
+    </div>
+    <div class="chips">
+      <span class="chip active" onclick="setTag('all',this)">All</span>
+      <span class="chip" onclick="setTag('adoption',this)">Adoption</span>
+      <span class="chip" onclick="setTag('engagement',this)">Engagement</span>
+      <span class="chip" onclick="setTag('retention',this)">Retention</span>
+      <span class="chip" onclick="setTag('pricing',this)">Pricing</span>
+      <span class="chip" onclick="setTag('sales',this)">Sales</span>
+    </div>
+  </div>
+
+  <div class="section-label" id="count">7 dashboards</div>
+
+  <div class="cards" id="cards">
+
+    <a class="card" href="#" data-cat="adoption" data-text="monthly adoption report account activation cohort">
+      <div class="card-icon icon-adoption">📈</div>
+      <div class="card-body">
+        <div class="card-title">Monthly adoption report</div>
+        <div class="card-desc">Account-level activation trends, new vs returning breakdown, and 5-month cohort view.</div>
+        <div class="card-meta">Updated monthly · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-adoption">Adoption</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="engagement" data-text="engagement stickiness dau mau session feature enterprise inside sales">
+      <div class="card-icon icon-engagement">⚡</div>
+      <div class="card-body">
+        <div class="card-title">Engagement & stickiness</div>
+        <div class="card-desc">DAU/MAU ratio, session depth, and feature engagement across enterprise and inside sales segments.</div>
+        <div class="card-meta">Updated weekly · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-engagement">Engagement</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="retention" data-text="retention prices widget recurring interaction health">
+      <div class="card-icon icon-retention">🔁</div>
+      <div class="card-body">
+        <div class="card-title">Retention & prices widget</div>
+        <div class="card-desc">Tracks recurring interaction with the Prices widget as a proxy for retention health.</div>
+        <div class="card-meta">Updated monthly · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-retention">Retention</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="adoption" data-text="account health activity score last seen risk csm">
+      <div class="card-icon icon-adoption">🏥</div>
+      <div class="card-body">
+        <div class="card-title">Account health overview</div>
+        <div class="card-desc">Per-account activity scores, last seen dates, and risk flagging for CSM follow-up.</div>
+        <div class="card-meta">Updated daily · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-adoption">Adoption</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="pricing" data-text="commodity price explorer trends search watchlist">
+      <div class="card-icon icon-pricing">🌾</div>
+      <div class="card-body">
+        <div class="card-title">Commodity price explorer</div>
+        <div class="card-desc">Cross-commodity price trends, user search query analysis, and watchlist coverage.</div>
+        <div class="card-meta">Updated daily · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-pricing">Pricing</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="sales" data-text="inside sales pipeline trial conversion funnel segment">
+      <div class="card-icon icon-sales">💼</div>
+      <div class="card-body">
+        <div class="card-title">Inside sales pipeline</div>
+        <div class="card-desc">Trial conversions, outreach activity, and segment-level funnel metrics for the inside sales team.</div>
+        <div class="card-meta">Updated weekly · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-sales">Sales</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-cat="engagement" data-text="feature adoption heatmap usage frequency accounts">
+      <div class="card-icon icon-engagement">🗺️</div>
+      <div class="card-body">
+        <div class="card-title">Feature adoption heatmap</div>
+        <div class="card-desc">Which features are used, by whom, and how often — across all active accounts.</div>
+        <div class="card-meta">Updated weekly · Looker</div>
+      </div>
+      <div class="card-right">
+        <span class="tag tag-engagement">Engagement</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="empty" id="empty" style="display:none">No dashboards match your search.</div>
+
+</div>
+
+<script>
+  let activeTag = 'all';
+
+  function setTag(tag, el) {
+    activeTag = tag;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    filter();
+  }
+
+  function filter() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(c => {
+      const matchTag = activeTag === 'all' || c.dataset.cat === activeTag;
+      const matchQ = !q || c.dataset.text.includes(q) || c.querySelector('.card-title').textContent.toLowerCase().includes(q);
+      const show = matchTag && matchQ;
+      c.style.display = show ? 'flex' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('empty').style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('count').textContent = visible + ' dashboard' + (visible !== 1 ? 's' : '');
+  }
+</script>
+
+</body>
+</html>
